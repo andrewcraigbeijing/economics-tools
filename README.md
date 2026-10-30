@@ -55,3 +55,31 @@ The static site still runs with `python3 -m http.server 3000 --bind 0.0.0.0`. De
 ## AI provider
 
 RWE Genie now uses DeepSeek for explanation and Tavily for web retrieval. No OpenAI key is used. Both `DEEPSEEK_API_KEY` and `TAVILY_API_KEY` must be set as backend secrets; get them from https://platform.deepseek.com/ and https://app.tavily.com/. See [backend setup](backend/README.md) for deployment. Live requests are limited to 400 characters so the entire request, including location/date constraints, reaches the search service. Search results are treated as evidence excerpts, not independently verified full articles. The interface names both services before a live request. The archive remains available while setup is pending.
+
+## Adaptive flashcards and tablet drawing
+
+Open **Flashcards** in the navigation or use `#flashcards`. Three modes are available:
+
+- **Vocabulary:** recall a term's definition, reveal examples and common pitfalls, then self-rate.
+- **Identify the diagram:** inspect an original schematic diagram, type its name, reveal the model and checklist, then self-rate.
+- **Draw the diagram:** draw on screen or import a photo of paper work, reveal the reference diagram without replacing your own work, then self-rate.
+
+Ratings are independent across vocabulary, identification and drawing. Red has selection weight 6, yellow 3, green 1, and unrated cards 3. Immediate repeats are excluded for decks with three or more cards. One- and two-card filters allow repeats so ratings still affect selection. These are relative selection weights among eligible cards, not guaranteed frequencies or scheduled spaced-repetition intervals. Reveal an answer before rating. Ratings persist in local browser storage; resetting the selected ratings does not delete sketches.
+
+Decks follow the global SL/HL selector and unit filter. Current vocabulary coverage is 28 shared concepts plus 3 HL concepts. Original diagram decks contain 8 shared models plus the HL monopoly model. These are starter decks, not exhaustive syllabus coverage. Self-assessment does not automatically mark a typed identification or an uploaded diagram.
+
+The same improved sketch pad is available in Diagram Lab. It supports finger, pressure-sensitive stylus and mouse input, freehand/straight lines/eraser/labels, optional axes/grid, undo/redo, written notes and PNG export. Existing Diagram Lab strokes are copied into the new pad on first use; original storage is retained.
+
+Photo import and the device photo-picker/camera input accept JPG/PNG/WebP up to 10 MB and reject unsupported/corrupt images. HEIC needs conversion first. Images are resized to a maximum dimension of 1600 pixels and stored with strokes in this browser's IndexedDB. Photos do **not** go to a server, AI service or other device. Wait for the saved indicator; download important work. Browser clearing, private browsing or device changes can remove local work. Storage failures show a warning and PNG export remains available. Physical stylus pressure and camera behaviour depend on the device/browser; synthetic pointer input and desktop Chromium's touch-enabled browser context were tested, not every tablet model.
+
+No API keys or AI backend are needed for flashcards or drawing. New frontend files are `flashcard-engine.js`, `diagram-flashcards.js`, `sketch-pad.js` and `flashcards.js`.
+
+Validation:
+
+```sh
+node tests/flashcard-engine.test.mjs
+# Optional browser verification, with Playwright and Chromium installed:
+node tests/flashcards-browser.cjs
+```
+
+Browser tests use an isolated browser context and cover confidence persistence, reveal gating, SL/HL/unit filtering, diagram modes, strokes/undo/redo, imported photo reload, PNG export, invalid images, image-decoding fallback, synthetic stylus/touch input, legacy drawing migration and mobile overflow. The browser test uses `CHROMIUM_PATH` (default `/usr/bin/chromium`) and `ECON_TEST_URL` (default `http://127.0.0.1:3000`).
