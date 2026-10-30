@@ -60,11 +60,11 @@ RWE Genie now uses DeepSeek for explanation and Tavily for web retrieval. No Ope
 
 Open **Flashcards** in the navigation or use `#flashcards`. Three modes are available:
 
-- **Vocabulary:** recall a term's definition, reveal examples and common pitfalls, then self-rate.
+- **Vocabulary:** type a definition in your own words, reveal the model definition, examples and common pitfalls, then self-rate. Typed drafts stay visible for comparison and save separately for each term.
 - **Identify the diagram:** inspect an original schematic diagram, type its name, reveal the model and checklist, then self-rate.
 - **Draw the diagram:** draw on screen or import a photo of paper work, reveal the reference diagram without replacing your own work, then self-rate.
 
-Ratings are independent across vocabulary, identification and drawing. Red has selection weight 6, yellow 3, green 1, and unrated cards 3. Immediate repeats are excluded for decks with three or more cards. One- and two-card filters allow repeats so ratings still affect selection. These are relative selection weights among eligible cards, not guaranteed frequencies or scheduled spaced-repetition intervals. Reveal an answer before rating. Ratings persist in local browser storage; resetting the selected ratings does not delete sketches.
+Ratings are independent across vocabulary, identification and drawing. Ratings now schedule reviews rather than merely changing random weights. Red becomes due after one other card or 30 seconds; yellow after four other cards or five minutes; green after fourteen other cards or 24 hours, whichever comes first. Due red cards have priority over yellow, new and green cards; another due card is preferred to an immediate repeat. If a small deck has no due cards, it shows a resting state instead of immediately repeating a green card. Students can wait, change units or explicitly review early. Due status is eligibility, not a promise of an exact next-card position. Review counters are per mode across unit/course filters, and schedules persist across reloads. Old ratings without scheduling metadata use their last-review time. Reveal an answer before rating. Resetting selected ratings keeps drawings and typed definitions.
 
 Decks follow the global SL/HL selector and unit filter. Current vocabulary coverage is 28 shared concepts plus 3 HL concepts. Original diagram decks contain 8 shared models plus the HL monopoly model. These are starter decks, not exhaustive syllabus coverage. Self-assessment does not automatically mark a typed identification or an uploaded diagram.
 
