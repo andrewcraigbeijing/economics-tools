@@ -83,3 +83,23 @@ node tests/flashcards-browser.cjs
 ```
 
 Browser tests use an isolated browser context and cover confidence persistence, reveal gating, SL/HL/unit filtering, diagram modes, strokes/undo/redo, imported photo reload, PNG export, invalid images, image-decoding fallback, synthetic stylus/touch input, legacy drawing migration and mobile overflow. The browser test uses `CHROMIUM_PATH` (default `/usr/bin/chromium`) and `ECON_TEST_URL` (default `http://127.0.0.1:3000`).
+
+## Marked exemplars and examiner commentary
+
+The reference shelf now includes 20 additional PDFs: five HL Paper 3 student responses and five paired commentaries, plus five SL Paper 2 responses and five paired commentaries (100 pages total). There are 33 registered reference documents overall.
+
+Open `#exemplars` or **Marked work** for ten source-referenced study summaries. The cases show the assessed question total, the extended-response/recommendation mark, strengths, limitations and a concrete improvement. The global SL/HL selector limits availability; SL-labelled Paper 2 insights are also available to HL students. Filters cover component and topic/skill keywords. Writing, evaluation and practice-paper screens link to these insights. The study note is excluded from printed practice papers.
+
+Marks and summaries were checked against the typed examiner commentary. HL Paper 3 marks are for **one 30-mark question**, not an entire 60-mark paper. Comments about units, working, rounding, diagrams, positive marking and best fit apply to their particular questions and must not be turned into universal marking rules. The study summaries do not automatically grade a new response or predict its mark.
+
+All ten student responses contain scanned handwriting. PDF text extraction retrieves only their printed headers/footers, not a reliable transcription of the answers. The original scans are retained privately alongside searchable commentary text and a paired manifest/index in `/workspace/knowledge-base/exemplars`; selected pages were visually sampled, not every handwritten page transcribed. Uploaded originals, extraction text, private file paths and upload identifiers are not published in this repository. `exemplar-data.js` contains only source metadata, factual scores and original study summaries. These documents are not automatically sent to DeepSeek or used to train a model.
+
+Validation:
+
+```sh
+node tests/exemplars.test.mjs
+# With the local site running and Playwright/Chromium installed:
+node tests/exemplars-browser.cjs
+```
+
+Validation checked all ten question numbers/totals/extended-response marks against source text, all document pairings, source IDs, SL/HL filtering, topic search, page references, writing/paper links, print isolation and mobile layout. Browser tests use `CHROMIUM_PATH` and `ECON_TEST_URL` with the same defaults as the flashcard tests.
