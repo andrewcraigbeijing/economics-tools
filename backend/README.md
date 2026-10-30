@@ -1,56 +1,73 @@
-# RWE Genie live-search backend
+# RWE Genie: DeepSeek + web search
 
-This Cloudflare Worker keeps the OpenAI API key off the GitHub Pages website. It calls the Responses API with live `web_search`, requires structured output and checks that each returned example has at least one HTTPS citation present in the search response. This validates link provenance, not the truth of every claim. It returns fewer than three examples when evidence is insufficient.
+The Cloudflare Worker uses **Tavily to retrieve web sources** and **DeepSeek to select and explain relevant examples**. This integration does not rely on an OpenAI API key. DeepSeek receives the student request, SL/HL level and retrieved text excerpts; it does not browse through a built-in search tool.
 
-The frontend and expanded archive work without this backend. Live search is **not active** until the Worker is deployed, its secret is configured and the frontend endpoint is saved.
+The static website and archive collection work without this backend. Live search remains **inactive** until the Worker is deployed, both provider secrets are configured, and its public URL is saved in `rwe-config.js`.
 
-## Deploy (Cloudflare account required)
+## Get the two keys
 
-The prepared default is Cloudflare Workers. No account or deployment credential was available during implementation. Use a supported Node version (Node 22 or 24 is suitable) and the pinned Wrangler CLI below. These steps use Cloudflare's own authentication and secret entry. Never put a real API key in a tracked file, browser code, GitHub issue or chat.
+1. Create an account at [DeepSeek Platform](https://platform.deepseek.com/), set up API billing as required, and create a key in its API Keys section. This becomes `DEEPSEEK_API_KEY`.
+2. Create an account at [Tavily](https://app.tavily.com/) and obtain a search API key. This becomes `TAVILY_API_KEY`. Check current search allowances and pricing in that account.
 
-From the repository root:
+Never put keys in frontend code, tracked files, GitHub issues or chat. Use separate project/service credentials and monitor both providers' billing. These keys are independent of a consumer chatbot subscription.
+
+## Deploy to Cloudflare
+
+Use Node 22 or 24 and the pinned Wrangler CLI below. From the repository root:
 
 ```sh
 npx wrangler@4.156.0 login
 npx wrangler@4.156.0 deploy --config backend/wrangler.jsonc
-npx wrangler@4.156.0 secret put RWE_AI_API_KEY --config backend/wrangler.jsonc
+npx wrangler@4.156.0 secret put DEEPSEEK_API_KEY --config backend/wrangler.jsonc
+npx wrangler@4.156.0 secret put TAVILY_API_KEY --config backend/wrangler.jsonc
 ```
 
-The last command prompts for the key securely. Use a key for a dedicated OpenAI API project with billing enabled and access to a model supporting live web search and Structured Outputs. A ChatGPT subscription does not supply API credits. Set project budgets/alerts in OpenAI and monitor actual usage; request-count caps are not a guaranteed monetary spending cap. Alternatively add `RWE_AI_API_KEY` using the Cloudflare Worker's secret settings after deployment. Environment secrets in this Codex environment do **not** automatically transfer into Cloudflare.
+The secret commands prompt securely. Alternatively enter the two values as **secrets** in the Cloudflare Worker's settings. Codex environment secrets do not transfer automatically to Cloudflare.
 
-`backend/wrangler.jsonc` defines the Durable Object and its migration, allowed frontend origin, `gpt-5-mini` model, 30 requests per UTC day across the entire site and 3 per client IP per UTC hour. These conservative defaults are adjustable up to enforced code caps of 200/day and 20/IP/hour. Failed provider calls also consume a reservation. Shared school IP addresses share an allowance. Origin checks are a browser access control, not user authentication; a non-browser client can forge Origin. Global durable quota enforcement limits request-count abuse across Worker instances. Do not remove it to make a public demo work.
+`backend/wrangler.jsonc` configures the Durable Object, allowed website origin and default model alias `deepseek-chat`. `RWE_MODEL` is adjustable; select a DeepSeek model supporting Chat Completions JSON-object output. Model availability and aliases can change; verify a real request after deployment.
 
-Verify the deployed URL, replacing `<worker-host>` with the actual host printed by deployment:
+Verify the actual host printed by deployment:
 
 ```sh
 curl --fail https://<worker-host>/health
 ```
 
-The response should be `{"ready":true}`. This only checks configuration presence. Then edit the public `rwe-config.js` file:
+`{"ready":true}` means both key bindings, quota binding and allowed origin are present. It does not prove valid billing, authorised keys or working provider requests. Then change the **public URL only** in `rwe-config.js`:
 
 ```js
 window.RWE_CONFIG = { apiUrl: 'https://<worker-host>/api/rwe' };
 ```
 
-Commit and push that URL so GitHub Pages rebuilds. The live-source option then becomes selectable. Test a real request through the deployed site and inspect the actual source links; a working health endpoint is not proof of AI access, model support, billing or factual accuracy. Model availability can change: `RWE_MODEL` is configurable, but the chosen model must support Responses web search, reasoning effort `low` and strict JSON schema output.
+Commit and push the URL so GitHub Pages rebuilds, then test the live mode through the website. Read the returned sources to check factual support and relevance. No live deployment or real paid-provider request has been validated during this change: keys and hosting access were absent.
 
-The configured origin is `https://andrewcraigbeijing.github.io`, without a path or trailing slash. Update `ALLOWED_ORIGINS` if hosting changes. For local testing add the exact local origin to a local config; do not add wildcard CORS to production.
+The allowed origin defaults to `https://andrewcraigbeijing.github.io`, without a path or trailing slash. Update `ALLOWED_ORIGINS` when changing hosting. Avoid wildcard CORS in production. The earlier `RWE_AI_API_KEY`/OpenAI binding is obsolete and not read by this backend. If it remains in environment settings, remove it there; draft requirement updates cannot delete bindings.
 
-## Privacy and reliability
+## Retrieval and citations
 
-Only the student's request and SL/HL choice go to OpenAI. Uploaded PDFs, drafts and browser storage are not sent. The frontend tells students before live searches and asks them to omit personal information. The Worker uses `store:false` and does not log prompts or API keys. Provider retention and processing policies still apply. Quota storage retains a daily-rotating hash of the client IP, hourly counters and a daily total; an alarm clears expired quota state. Cloudflare itself processes connection metadata.
+- Live requests accept 8–400 characters. The complete request is used for search, preserving country/date conditions rather than silently truncating them.
+- One basic Tavily search returns up to ten usable HTTPS sources and excerpts. No generated search-provider answer or full-page scraping is requested. Empty search results skip the DeepSeek call and return no examples.
+- DeepSeek is instructed to exclude cases that fail explicit topic, place or date constraints, and return fewer than three when evidence is insufficient. These are model instructions, not a guarantee of relevance.
+- The backend validates JSON output, required fields, duplicate cases and citations against actual retrieved URLs. Citation titles come from search results rather than the model. Invented URLs are removed; uncited answers are rejected.
+- Text excerpts are limited in length. A URL returned by search is not proof that the whole article supports every claim. The interface says DeepSeek uses excerpts, and students should read the source pages themselves.
+- Provider failures are shown without exposing their response bodies or keys. There are no automatic paid retries, and a shared 90-second deadline bounds both calls.
 
-Search results and student requests are untrusted inputs. Only the fixed OpenAI endpoint is called by backend code. Citation URLs are not fetched by the Worker. Citations are shown as escaped links with `noopener noreferrer`; never treat model output as HTML. Read the sources before using facts in an essay. Web content may be inaccurate, outdated or misleading even when it appears in search.
+## Usage limits and privacy
 
-## Validation
+A shared Durable Object enforces 30 searches per UTC day across the site and 3 per client IP per UTC hour. Configurable values are bounded by code caps of 200/day and 20/IP/hour. A reservation covers the workflow containing both provider calls; failures also consume a reservation. These request-count limits are not a guaranteed financial cap. Monitor both provider accounts and set account-level budgets or alerts where available.
 
-Run the backend tests directly to see all named cases in this environment:
+Shared school IP addresses share the hourly allowance. Origin checks control browser access, not user authentication; non-browser clients can forge Origin. The durable global cap remains important for a public demo.
+
+Tavily receives the student's search request. DeepSeek receives that request, course level and retrieved excerpts. Uploaded PDFs, writing drafts and browser-storage contents are not sent. The browser explains this before a live search and asks students to omit personal information. The Worker does not log requests or keys; provider processing and retention policies still apply. No unsupported zero-retention claim is made. Quota storage holds a daily-rotating IP hash, hourly counters and a daily total; alarms remove expired state. Cloudflare processes connection metadata.
+
+Student input and web excerpts are untrusted data. Backend requests go only to the fixed Tavily and DeepSeek endpoints. Citation pages are not fetched by backend code. Displayed content is escaped; citation links use `noopener noreferrer`.
+
+## Validation and references
 
 ```sh
 node tests/rwe-backend.test.mjs
 npx wrangler@4.156.0 deploy --config backend/wrangler.jsonc --dry-run
 ```
 
-Twelve tests cover actual search-request fields, URL provenance checks, partial results, invalid requests, CORS, provider failures, concurrent shared quotas, per-IP limits and midnight alarm behaviour. The real local Cloudflare runtime was also tested with synthetic provider responses and enforced the configured per-IP limit. Browser tests covered archive fallback, escaped citations, mocked AI responses and quota errors, course level transmission and cancellation protection.
+Seventeen tests cover the two-provider order and key isolation, exact query preservation, retrieved-evidence handling, JSON parsing, invented citations, partial results, empty searches, provider failures, both required secrets, shared atomic quotas and alarm behaviour. Browser checks use synthetic provider responses and do not spend credits. Passing mocked tests and a deployment dry-run do not establish live provider access.
 
-No live OpenAI request or public Cloudflare deployment has been validated yet: the API key and hosting access were absent. Mocked responses are test fixtures, not real examples or evidence that live search works.
+API references: [DeepSeek API](https://api-docs.deepseek.com/), [DeepSeek official repository](https://github.com/deepseek-ai/DeepSeek-V3#5-chat-website--api-platform), [Tavily official Python client](https://github.com/tavily-ai/tavily-python). The implementation uses native HTTP requests with no additional production dependencies.

@@ -6,7 +6,7 @@
   "workers_dev": true,
   "vars": {
     "ALLOWED_ORIGINS": "https://andrewcraigbeijing.github.io",
-    "RWE_MODEL": "gpt-5-mini",
+    "RWE_MODEL": "deepseek-chat",
     "RWE_DAILY_LIMIT": "30",
     "RWE_IP_HOURLY_LIMIT": "3"
   },
