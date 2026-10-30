@@ -86,7 +86,7 @@ Browser tests use an isolated browser context and cover confidence persistence, 
 
 ## Marked exemplars and examiner commentary
 
-The reference shelf now includes 20 additional PDFs: five HL Paper 3 student responses and five paired commentaries, plus five SL Paper 2 responses and five paired commentaries (100 pages total). There are 33 registered reference documents overall.
+The reference shelf now includes 20 additional PDFs: five HL Paper 3 student responses and five paired commentaries, plus five SL Paper 2 responses and five paired commentaries (100 pages total). Together with the other uploads and past-paper compilations, there are now 38 registered reference documents.
 
 Open `#exemplars` or **Marked work** for ten source-referenced study summaries. The cases show the assessed question total, the extended-response/recommendation mark, strengths, limitations and a concrete improvement. The global SL/HL selector limits availability; SL-labelled Paper 2 insights are also available to HL students. Filters cover component and topic/skill keywords. Writing, evaluation and practice-paper screens link to these insights. The study note is excluded from printed practice papers.
 
@@ -103,3 +103,34 @@ node tests/exemplars-browser.cjs
 ```
 
 Validation checked all ten question numbers/totals/extended-response marks against source text, all document pairings, source IDs, SL/HL filtering, topic search, page references, writing/paper links, print isolation and mobile layout. Browser tests use `CHROMIUM_PATH` and `ECON_TEST_URL` with the same defaults as the flashcard tests.
+
+## Uploaded past-paper corpus
+
+Five compilations (1,242 PDF pages) are indexed privately for future topic drills, diagram/calculation practice, response planning, paper selection and source-specific marking review. There are **196 distinct reference codes**: Paper 1 has 127, Paper 2 has 46 and Paper 3 has 23. Specimen questions are undated; other sessions are read from reference codes, spanning 2020–November 2025. Do not infer completeness from the compilation filenames.
+
+The private corpus at `/workspace/knowledge-base/past-papers` contains original PDF locations, file hashes, full extracted compilation text, a question-level index, separate extracted question blocks, subpart prompts/marks, marking material and examiner reports where present. Every compilation question header was indexed once and source page ranges were checked. Figures, data tables and some subquestions/marking material are image-based and may not appear in extracted text. The PDFs remain necessary for complete practice; this is not a fully OCR-verified transcription.
+
+Open `#past-papers` or **Past-paper index** for a public **reference catalogue**. It provides source codes and PDF page ranges, suggested unit/topic/command tags, paper/session/level filters and a downloadable filtered practice-reference list. Full exam questions, source stimuli and markschemes are not published. Topic tags are automatic suggestions, not official classifications. The practice-paper generator still creates original unofficial questions and links to the reference catalogue; it does not silently incorporate these sources as complete official mocks.
+
+Fourteen SL/HL pairs have matching **extracted prompt text**, yielding 182 matching-prompt groups across all 196 original references. This is not proof that the full stimulus, figures and marking are identical. Grouping can be disabled; every original reference is retained. There are 39 pre-2022 references, excluded by default. Current-format Paper 2 is shared across SL/HL, while printed source levels are preserved.
+
+Compilation header totals are preserved rather than silently corrected. For example, `23N.1.SL.TZ1.2` lists 35 marks while extracted parts sum to 25. Other records have incomplete extracted part totals or atypical headers. Flags distinguish source-total anomalies, incomplete extraction, image-based material and legacy-format checks. Do not use unchecked records to set a current mock's mark total. No automatic grading or model training on these papers has been added.
+
+The reusable importer is `scripts/index_past_papers.py` (Python standard library plus `pdftotext`):
+
+```sh
+python3 scripts/index_past_papers.py /path/to/compilation.pdf \
+  --output /workspace/knowledge-base/past-papers \
+  --public-data past-paper-data.js
+```
+
+Supply **all retained compilations** together when rebuilding: the index and public catalogue are replaced by the supplied set. Public output excludes full question/marking text, upload IDs and private source paths.
+
+Validation:
+
+```sh
+node tests/past-papers.test.mjs
+node tests/past-papers-browser.cjs
+```
+
+Checks cover reference counts and pair grouping, page ranges, source registration, suggested tags, original mark totals and anomaly flags, SL/HL and legacy eligibility, combined filters, reference downloads, preservation of the original practice generator, and mobile layout. Browser dependencies and environment overrides are the same as the other browser tests.
