@@ -20,3 +20,13 @@ curl --fail http://127.0.0.1:3000/
 ```
 
 For functional verification, open each study area, search a concept, draw and undo a line, add a label, export a PNG, and write a response. Refresh to verify local persistence. This project is not affiliated with the IB.
+
+## Reference-based study content
+
+`knowledge.js` contains original study summaries informed by the ten user-supplied reference documents. `study.js` adds unit filters, definition recall, command terms, a reference shelf and eight linked diagram/analysis/evaluation topics. Keep both files beside the original website files when deploying.
+
+The collection currently contains 28 concepts and 12 command terms. It is not exhaustive SL/HL syllabus coverage. Source notes identify supporting documents; some definition references include PDF page positions, which may differ from printed numbering. Original PDFs and extracted textbook text are kept outside this repository and are not distributed by the website. The textbook text extraction has gaps; no damaged passages are presented as quotations. This is curated study content, not a full-document search or AI question-answering system.
+
+Drafts and drawings are separate for each practice topic. Existing sugary-drinks writing drafts are available in the tax topic. Reflection uses self-review checklists; no answers are automatically graded.
+
+Browser validation covered unit filtering, concept search and recall, command terms and sources, per-topic writing persistence and canvas storage, reflection, PNG export, reload and all seven routes at mobile width.
