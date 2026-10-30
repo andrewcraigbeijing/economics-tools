@@ -1,5 +1,6 @@
 import {handleRequest} from './core.mjs';
-export default {fetch:handleRequest};
+import {handleDiagramRequest} from './diagram-check.mjs';
+export default {fetch(request,env){const path=new URL(request.url).pathname;return path==='/api/diagram-check'||path==='/diagram-health'?handleDiagramRequest(request,env):handleRequest(request,env)}};
 // One Durable Object provides an atomic global daily cap across all Worker instances.
 export class RweQuota {
   constructor(ctx,env){this.ctx=ctx;this.env=env}

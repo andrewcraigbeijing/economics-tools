@@ -7,6 +7,8 @@
   "vars": {
     "ALLOWED_ORIGINS": "https://andrewcraigbeijing.github.io",
     "RWE_MODEL": "deepseek-chat",
+    "DIAGRAM_VISION_PROVIDER": "qwen",
+    "DIAGRAM_VISION_MODEL": "qwen3-vl-235b-a22b-instruct",
     "RWE_DAILY_LIMIT": "30",
     "RWE_IP_HOURLY_LIMIT": "3"
   },

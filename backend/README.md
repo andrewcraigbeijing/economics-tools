@@ -71,3 +71,7 @@ npx wrangler@4.156.0 deploy --config backend/wrangler.jsonc --dry-run
 Seventeen tests cover the two-provider order and key isolation, exact query preservation, retrieved-evidence handling, JSON parsing, invented citations, partial results, empty searches, provider failures, both required secrets, shared atomic quotas and alarm behaviour. Browser checks use synthetic provider responses and do not spend credits. Passing mocked tests and a deployment dry-run do not establish live provider access.
 
 API references: [DeepSeek API](https://api-docs.deepseek.com/), [DeepSeek official repository](https://github.com/deepseek-ai/DeepSeek-V3#5-chat-website--api-platform), [Tavily official Python client](https://github.com/tavily-ai/tavily-python). The implementation uses native HTTP requests with no additional production dependencies.
+
+## Diagram photo feedback and China hosting
+
+A separate image endpoint uses **Alibaba Cloud Qwen-VL**, not the DeepSeek text model. Its secret is `DIAGRAM_VISION_API_KEY`; its configuration and China-hostable single-origin server are documented in [DIAGRAM-CHECKER.md](DIAGRAM-CHECKER.md). The Node server can host the existing website and both API routes without a Cloudflare dependency. The RWE and image features remain independently configurable; no live Qwen key or China deployment was supplied during implementation.

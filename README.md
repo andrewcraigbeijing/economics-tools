@@ -134,3 +134,11 @@ node tests/past-papers-browser.cjs
 ```
 
 Checks cover reference counts and pair grouping, page ranges, source registration, suggested tags, original mark totals and anomaly flags, SL/HL and legacy eligibility, combined filters, reference downloads, preservation of the original practice generator, and mobile layout. Browser dependencies and environment overrides are the same as the other browser tests.
+
+## Diagram photo checker
+
+Open `#diagram-checker` or **Diagram checker**. Students can upload a drawing or use the device's camera picker, rotate the preview, state the intended diagram and request feedback on obvious axes/labels/shifts/equilibrium/welfare errors. The page also offers local model checklists before an AI backend is connected. Uploading a photo alone makes no external AI request. Feedback distinguishes clear errors from uncertain or unreadable features and does not award IB marks.
+
+The image model is **Alibaba Cloud Qwen-VL**, using the mainland-China DashScope API; RWE remains on DeepSeek. Gemini is not required. The public site's photo tools are usable, but live AI feedback needs the Qwen key and a deployed backend URL. No real provider call or mainland-China connectivity has been validated. See [diagram checker deployment](backend/DIAGRAM-CHECKER.md).
+
+For mainland-China hosting, `backend/china-server.mjs` is a zero-dependency Node 22/24 option serving only public app assets and same-origin APIs. It avoids a mandatory GitHub Pages/Cloudflare path; hosting/account/domain/TLS setup and regional testing remain necessary. Google Fonts was removed to eliminate that external frontend dependency. The portable server's quotas require persistent disk and a single process. It does not expose private PDFs, extracted corpus text, `.git` or backend files.
