@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "econ-studio-rwe",
+  "main": "worker.mjs",
+  "compatibility_date": "2025-06-01",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGINS": "https://andrewcraigbeijing.github.io",
+    "RWE_MODEL": "gpt-5-mini",
+    "RWE_DAILY_LIMIT": "30",
+    "RWE_IP_HOURLY_LIMIT": "3"
+  },
+  "durable_objects": {"bindings": [{"name":"RWE_QUOTA","class_name":"RweQuota"}]},
+  "migrations": [{"tag":"v1","new_sqlite_classes":["RweQuota"]}],
+  "observability": {"enabled":false}
+}

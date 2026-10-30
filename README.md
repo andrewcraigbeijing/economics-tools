@@ -41,3 +41,13 @@ Browser validation covered unit filtering, concept search and recall, command te
 - New site files `genie-data.js` and `features.js` must be deployed with the existing files. No new dependencies, API keys or backend are needed.
 
 Browser checks passed for SL/HL persistence and content filtering, three RWE results and sources, empty/unsupported requests and HTML injection handling, all available paper formats and unit focuses, mark totals, multiplier answers, text download, print/PDF exclusion of answers, and mobile layouts.
+
+## Expanded RWE archives and AI web search
+
+Three additional RWE archives (Macro: 74 pages; Micro: 31; Global: 46) are registered in the reference shelf. `archive-data.js` adds 24 original summaries to the earlier 12 examples, for 36 curated cases. Each has a PDF-page reference and a limitation. Archive-derived cases are not independently web-verified; selected questionable statements and outdated status claims are deliberately excluded. For example, the macro archive's claim of New Zealand abolishing minimum-wage legislation in 2008 is not used. Numerical impact claims from these archives are not copied into the example bank. Original PDFs remain outside the public repository.
+
+The RWE source selector distinguishes **reference collection** matching from **AI + live web search**. The AI option stays unavailable until a valid public endpoint is configured in `rwe-config.js`. `ai-genie.js` sends only the request and course level, displays source citations, handles errors and keeps archive search available. No API key belongs in frontend configuration.
+
+A deployable Cloudflare backend, its secure configuration instructions and validation details are in [backend/README.md](backend/README.md). The backend is prepared and tested locally; live AI activation requires Cloudflare deployment and an OpenAI API key entered through secure hosting settings. The default quota is 30 total searches per UTC day and 3 per IP per UTC hour. These are request limits, not a financial guarantee. Public live search has not yet been tested with a real key.
+
+The static site still runs with `python3 -m http.server 3000 --bind 0.0.0.0`. Deploy all frontend scripts listed in `index.html`, including `archive-data.js`, `rwe-config.js` and `ai-genie.js`. Backend deployment is separate from GitHub Pages.
