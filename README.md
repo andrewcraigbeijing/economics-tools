@@ -30,3 +30,14 @@ The collection currently contains 28 concepts and 12 command terms. It is not ex
 Drafts and drawings are separate for each practice topic. Existing sugary-drinks writing drafts are available in the tax topic. Reflection uses self-review checklists; no answers are automatically graded.
 
 Browser validation covered unit filtering, concept search and recall, command terms and sources, per-topic writing persistence and canvas storage, reflection, PNG export, reload and all seven routes at mobile width.
+
+## RWE Genie, course levels and practice papers
+
+- The header SL/HL selector persists in browser storage. HL adds asymmetric information, monopoly and multiplier concepts, monopoly/multiplier drawing and writing topics, and Paper 3. Paper 2 remains common to both levels.
+- RWE Genie ranks 12 curated historical examples from the supplied textbooks by topic/location keywords. Each result includes the context, application, evaluation limitation and PDF source/page. It returns the closest three for supported queries and labels broader comparisons. Unsupported queries get a no-match message. It does not use a live LLM, browse news or guarantee exact country/date constraints. `genie-data.js` holds the collection.
+- The practice generator in `features.js` creates original, unofficial questions. Paper 1: 75 minutes, three choices, answer one, 25 marks. Paper 2: 105 minutes, two choices, answer one, 40 marks. HL Paper 3: 105 minutes, two compulsory questions, 60 marks. Format references: uploaded Economics Syllabus 2024.pdf, PDF pages 66–68.
+- Paper 1 supports every unit; data/policy scenarios currently cover units 2–4. Unit-focused papers are narrower than full mixed-unit mocks. Synthetic data and simplified calculation assumptions are explicit. Question/answer-guidance quality has not been IB validated. There is no automatic grading.
+- Download questions as text or use Print / Save PDF. Print output excludes answer guidance and controls. Generated papers last until navigation/reload; download papers you want to keep.
+- New site files `genie-data.js` and `features.js` must be deployed with the existing files. No new dependencies, API keys or backend are needed.
+
+Browser checks passed for SL/HL persistence and content filtering, three RWE results and sources, empty/unsupported requests and HTML injection handling, all available paper formats and unit focuses, mark totals, multiplier answers, text download, print/PDF exclusion of answers, and mobile layouts.
